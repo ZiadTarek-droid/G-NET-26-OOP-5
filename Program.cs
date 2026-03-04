@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Intrinsics.X86;
+using System.Buffers;
 
 namespace ConsoleApp1
 {
@@ -113,25 +114,60 @@ namespace ConsoleApp1
             //            var e2 = e1.ShallowCopy();
             //            e2.Title = "QA";
             //            e2.Dept.Name = "Testing";
-            
+
             //            ShallowCopy() uses MemberwiseClone() → shallow copy.
-            
+
             //So:
-            
+
             //            Title(string reference but reassigned) → independent
-            
+
             //Dept(reference type) → shared between e1 and e2
-            
+
             //Output:
             //Dev - Testing
             //QA - Testing
             //Why?
-            
+
             //e2.Title = "QA" only affects e2.
-            
+
             //e2.Dept.Name = "Testing" affects both objects because Dept is shared.
             #endregion
 
+            #region Part-02
+            Cinema cinema = new Cinema();
+            cinema.Open();
+
+            var t1 = new StandardTicket("Inception", 80, "A5");
+            var t2 = new VIPTicket("Avengers", 200, true, 50);
+            var t3 = new IMAXTicket("Dune", 130, true);
+
+            t1.Book();
+            t2.Book();
+            t3.Book();
+
+            cinema.AddTicket(t1);
+            cinema.AddTicket(t2);
+            cinema.AddTicket(t3);
+
+            cinema.PrintAll();
+
+            Console.WriteLine("\n--- Clone Test ---");
+            var clone = (VIPTicket)t2.Clone();
+            clone.MovieName = "Interstellar";
+
+            Console.Write("Original : ");
+            t2.Print();
+            Console.Write("Clone    : ");
+            clone.Print();
+
+            Console.WriteLine("\n--- After Cancellation ---");
+            t1.Cancel();
+            t1.Print();
+
+            BookingHelper.PrintAll(new IPrintable[] { t1, t2, t3 });
+
+            cinema.Close();
+            #endregion
         }
     }
 }
